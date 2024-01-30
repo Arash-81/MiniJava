@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class Compiler {
     public static void main(String[] args) throws IOException {
-        CharStream stream = CharStreams.fromFileName("./sfskd.cl");
+        CharStream stream = CharStreams.fromFileName("./test/test.jm");
         MiniJavaLexer lexer = new MiniJavaLexer(stream);
         TokenStream tokens = new CommonTokenStream(lexer);
         MiniJavaParser parser = new MiniJavaParser(tokens);
@@ -20,5 +20,7 @@ public class Compiler {
         ParseTree tree = parser.program();
         ParseTreeWalker walker = new ParseTreeWalker();
         MiniJavaListener listener = new ProgramPrinter();
+
+        walker.walk(listener, tree);
     }
 }
