@@ -1,10 +1,30 @@
+class Pikachu {
+
+    public static void main(string[] state) {
+    if(<>(health < 2)) {
+    health = health - 2;
+    }
+    print("new health");
+    return health;
+    }
+}
+class x {
+    number x;
+    public void attack(Pokemon target, number amount) {
+    target.damage(amount);
+    }
+}
+interface Pokemon {
+    void speedUp(number a);
+}
+
 class Pikachu inherits Pokemon {
     @Override
     public number damage() {
     if(<>(health < 2)) {
-        health = health - 2;
+    health = health - 2;
     }
-    print(“new health”);
+    print("new health");
     ret health;
     }
 }

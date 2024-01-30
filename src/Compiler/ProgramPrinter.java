@@ -19,7 +19,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterMainClass(MiniJavaParser.MainClassContext ctx) {
-
+        System.out.println(ctx.getText());
     }
 
     @Override
