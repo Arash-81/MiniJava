@@ -7,6 +7,18 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class ProgramPrinter implements MiniJavaListener {
+
+    public static int tabCount = 1;
+    public static String tab = "    ";
+    public static void repeatTab(int count){
+        System.out.println(new String(new char[count]).replace("\0", tab));
+    }
+    public static void repeatStr(int count, String str) {
+        System.out.println(new String(new char[count]).replace("\0", str));
+    }
+    public static void printWord(String keyWord){
+        System.out.print(keyWord + " ");
+    }
     @Override
     public void enterProgram(MiniJavaParser.ProgramContext ctx) {
 
@@ -19,7 +31,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterMainClass(MiniJavaParser.MainClassContext ctx) {
-        System.out.println(ctx.getText());
+
     }
 
     @Override
@@ -69,6 +81,16 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterFieldDeclaration(MiniJavaParser.FieldDeclarationContext ctx) {
+        String fieldType = ctx.type().getText();
+        if (ctx.accessModifier() != null)
+            printWord(ctx.accessModifier().getText());
+        if (ctx.Final() != null)
+            printWord(ctx.Final().getText());
+        if (fieldType.equals("number"))
+            printWord("int");
+        else
+            printWord(ctx.type().getText());
+        printWord(ctx.Identifier().getText());
 
     }
 

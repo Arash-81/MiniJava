@@ -9,7 +9,7 @@ class Pikachu {
     }
 }
 class x {
-    number x;
+    private final number x;
     public void attack(Pokemon target, number amount) {
     target.damage(amount);
     }
