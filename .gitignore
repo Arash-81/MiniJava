@@ -3,6 +3,9 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+.idea
+mini-java.iml
+
 ### Eclipse ###
 .apt_generated
 .classpath
@@ -27,3 +30,5 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+doc
