@@ -10,7 +10,7 @@ import java.util.Locale;
 
 public class ProgramPrinter implements MiniJavaListener {
 
-    public static int tabCount = 1;
+    public static int tabCount = 0;
     public static String tab = "    ";
     public static int nested = 1;
     public static void repeatTab(int count){
@@ -23,6 +23,10 @@ public class ProgramPrinter implements MiniJavaListener {
 
     public static void printWord(String keyWord) {
         System.out.print(keyWord + " ");
+    }
+
+    public static void printLastWord(String keyWord){
+        System.out.println(keyWord);
     }
 
     @Override
@@ -51,15 +55,18 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterMainMethod(MiniJavaParser.MainMethodContext ctx) {
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 5; i++)
             printWord(ctx.getChild(i).getText());
         printWord("String[] args");
-        String returnType = "return type: " + ctx.getText();
+        printWord(")");
+        printLastWord("{");
+        tabCount++;
     }
 
     @Override
     public void exitMainMethod(MiniJavaParser.MainMethodContext ctx) {
-
+        tabCount--;
+        repeatStr(tabCount, "}");
     }
 
     @Override
@@ -116,6 +123,7 @@ public class ProgramPrinter implements MiniJavaListener {
     @Override
     public void enterFieldDeclaration(MiniJavaParser.FieldDeclarationContext ctx) {
         String fieldType = ctx.type().getText();
+        repeatTab(tabCount);
         if (ctx.accessModifier() != null)
             printWord(ctx.accessModifier().getText());
         if (ctx.Final() != null)
@@ -125,11 +133,13 @@ public class ProgramPrinter implements MiniJavaListener {
         else
             printWord(ctx.type().getText());
         printWord(ctx.Identifier().getText());
+        if (ctx.EQ() != null)
+            printWord("=");
     }
 
     @Override
     public void exitFieldDeclaration(MiniJavaParser.FieldDeclarationContext ctx) {
-
+        printLastWord(";");
     }
 
     @Override
@@ -458,12 +468,12 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterParenExpression(MiniJavaParser.ParenExpressionContext ctx) {
-//        printWord("(");
+        printWord("(");
     }
 
     @Override
     public void exitParenExpression(MiniJavaParser.ParenExpressionContext ctx) {
-//        printWord(")");
+        printWord(")");
     }
 
     @Override
