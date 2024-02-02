@@ -271,7 +271,13 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterIfElseStatement(MiniJavaParser.IfElseStatementContext ctx) {
+        repeatTab(tabCount);
 
+        System.out.println("if(" + ctx.expression() + ")" + ctx.ifBlock().getText());
+
+        if (ctx.getText().contains("else")) {
+            System.out.println("else " + ctx.elseBlock().getText());
+        }
     }
 
     @Override
@@ -321,7 +327,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterLocalVarDeclaration(MiniJavaParser.LocalVarDeclarationContext ctx) {
-        repeatTab(tabCount);
+//        repeatTab(tabCount);
         System.out.println(ctx.localDeclaration());
     }
 
@@ -342,22 +348,24 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterIfBlock(MiniJavaParser.IfBlockContext ctx) {
-
+        repeatTab(tabCount);
+        System.out.println(ctx.statement().getText());
     }
 
     @Override
     public void exitIfBlock(MiniJavaParser.IfBlockContext ctx) {
-
+        //No exit
     }
 
     @Override
     public void enterElseBlock(MiniJavaParser.ElseBlockContext ctx) {
-
+        repeatTab(tabCount);
+        System.out.println(ctx.statement().getText());
     }
 
     @Override
     public void exitElseBlock(MiniJavaParser.ElseBlockContext ctx) {
-
+        //No exit
     }
 
     @Override
@@ -372,7 +380,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterLtExpression(MiniJavaParser.LtExpressionContext ctx) {
-
+        System.out.print(ctx.expression(0).getText() + " < " + ctx.expression(1).getText());
     }
 
     @Override
@@ -498,12 +506,12 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterAndExpression(MiniJavaParser.AndExpressionContext ctx) {
-
+        System.out.print(ctx.expression(0).getText() + " && " + ctx.expression(1).getText());
     }
 
     @Override
     public void exitAndExpression(MiniJavaParser.AndExpressionContext ctx) {
-
+        //No exit
     }
 
     @Override
