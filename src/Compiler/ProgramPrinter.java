@@ -12,9 +12,9 @@ public class ProgramPrinter implements MiniJavaListener {
 
     public static int tabCount = 1;
     public static String tab = "    ";
-
-    public static void repeatTab(int count) {
-        System.out.println(new String(new char[count]).replace("\0", tab));
+    public static int nested = 1;
+    public static void repeatTab(int count){
+        System.out.print(new String(new char[count]).replace("\0", tab));
     }
 
     public static void repeatStr(int count, String str) {
@@ -51,7 +51,10 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterMainMethod(MiniJavaParser.MainMethodContext ctx) {
-
+        for (int i = 0; i < 4; i++)
+            printWord(ctx.getChild(i).getText());
+        printWord("String[] args");
+        String returnType = "return type: " + ctx.getText();
     }
 
     @Override
@@ -250,12 +253,20 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterNestedStatement(MiniJavaParser.NestedStatementContext ctx) {
-
+        if (nested > 0) {
+            repeatStr(tabCount, "{");
+            tabCount++;
+        }
+        nested++;
     }
 
     @Override
     public void exitNestedStatement(MiniJavaParser.NestedStatementContext ctx) {
-
+        nested--;
+        if (nested > 0) {
+            tabCount--;
+            repeatStr(tabCount, "}");
+        }
     }
 
     @Override
@@ -447,12 +458,12 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterParenExpression(MiniJavaParser.ParenExpressionContext ctx) {
-
+//        printWord("(");
     }
 
     @Override
     public void exitParenExpression(MiniJavaParser.ParenExpressionContext ctx) {
-
+//        printWord(")");
     }
 
     @Override
