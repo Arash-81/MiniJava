@@ -12,15 +12,19 @@ public class ProgramPrinter implements MiniJavaListener {
 
     public static int tabCount = 1;
     public static String tab = "    ";
-    public static void repeatTab(int count){
+
+    public static void repeatTab(int count) {
         System.out.println(new String(new char[count]).replace("\0", tab));
     }
+
     public static void repeatStr(int count, String str) {
         System.out.println(new String(new char[count]).replace("\0", str));
     }
-    public static void printWord(String keyWord){
+
+    public static void printWord(String keyWord) {
         System.out.print(keyWord + " ");
     }
+
     @Override
     public void enterProgram(MiniJavaParser.ProgramContext ctx) {
 
@@ -33,11 +37,16 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterMainClass(MiniJavaParser.MainClassContext ctx) {
+        repeatTab(tabCount);
+        tabCount++;
+        System.out.println("class " + ctx.className.getText() + "{");
     }
 
     @Override
     public void exitMainClass(MiniJavaParser.MainClassContext ctx) {
-
+        tabCount--;
+        repeatTab(tabCount);
+        System.out.println("}");
     }
 
     @Override
@@ -56,14 +65,14 @@ public class ProgramPrinter implements MiniJavaListener {
         tabCount++;
         printWord("class " + ctx.className.getText().toLowerCase(Locale.ROOT));
 
-        boolean hasInheritance = ctx.getText().contains("inherits");
+        boolean hasInheritance = ctx.getText().contains("extends");
         if (hasInheritance)
-            printWord("inherits " + ctx.Identifier(1));
+            printWord("extends " + ctx.Identifier(1));
 
         boolean hasImplementation = ctx.getText().contains("implements");
-        if (hasImplementation){
+        if (hasImplementation) {
             StringBuilder interfaceList = new StringBuilder(ctx.Identifier(2).getText());
-            for (int i = 2; i < ctx.Identifier().size(); i++)
+            for (int i = 3; i < ctx.Identifier().size(); i++)
                 interfaceList.append(",").append(ctx.Identifier(i).getText());
             System.out.print("implements " + interfaceList);
         }
@@ -79,12 +88,16 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterInterfaceDeclaration(MiniJavaParser.InterfaceDeclarationContext ctx) {
-
+        repeatTab(tabCount);
+        tabCount++;
+        System.out.println("interface " + ctx.Identifier().getText() + " {");
     }
 
     @Override
     public void exitInterfaceDeclaration(MiniJavaParser.InterfaceDeclarationContext ctx) {
-
+        tabCount--;
+        repeatTab(tabCount);
+        System.out.println("}");
     }
 
     @Override
@@ -118,12 +131,13 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterLocalDeclaration(MiniJavaParser.LocalDeclarationContext ctx) {
-
+        repeatTab(tabCount);
+        System.out.println(ctx.type() + " " + ctx.Identifier() + ";");
     }
 
     @Override
     public void exitLocalDeclaration(MiniJavaParser.LocalDeclarationContext ctx) {
-
+        // No exit
     }
 
     @Override
@@ -138,72 +152,100 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterParameterList(MiniJavaParser.ParameterListContext ctx) {
-
+        StringBuilder paramList = new StringBuilder(ctx.parameter(0).getText());
+        if (ctx.parameter(1) != null)
+            for (int i = 1; i < ctx.parameter().size(); i++)
+                paramList.append(",").append(ctx.parameter(i).getText());
+        System.out.print(paramList);
     }
 
     @Override
     public void exitParameterList(MiniJavaParser.ParameterListContext ctx) {
-
+        // No exit
     }
 
     @Override
     public void enterParameter(MiniJavaParser.ParameterContext ctx) {
-
+        System.out.print(ctx.type() + " " + ctx.Identifier() + ";");
     }
 
     @Override
     public void exitParameter(MiniJavaParser.ParameterContext ctx) {
-
+        // No exit
     }
 
     @Override
     public void enterMethodBody(MiniJavaParser.MethodBodyContext ctx) {
-
+        if (!ctx.statement().isEmpty()) {
+            for (int i = 0; i < ctx.statement().size(); i++) {
+                repeatTab(tabCount);
+                System.out.println(ctx.statement(i));
+            }
+        }
+        if (ctx.getText().contains("return")) {
+            repeatTab(tabCount);
+            System.out.println("return " + ctx.expression() + ";");
+        }
     }
 
     @Override
     public void exitMethodBody(MiniJavaParser.MethodBodyContext ctx) {
-
+        // No exit
     }
 
     @Override
     public void enterType(MiniJavaParser.TypeContext ctx) {
+        String type;
+        if (ctx.javaType() != null)
+            type = ctx.javaType().getText();
+        else
+            type = ctx.Identifier().getText();
 
+        if (ctx.getText().contains("["))
+            System.out.print(type + "[]");
+        else
+            System.out.print(type);
     }
 
     @Override
     public void exitType(MiniJavaParser.TypeContext ctx) {
-
+        // No exit
     }
 
     @Override
     public void enterBooleanType(MiniJavaParser.BooleanTypeContext ctx) {
-
+        System.out.print("boolean");
     }
 
     @Override
     public void exitBooleanType(MiniJavaParser.BooleanTypeContext ctx) {
-
+        // No exit
     }
 
     @Override
     public void enterReturnType(MiniJavaParser.ReturnTypeContext ctx) {
-
+        if (ctx.getText().contains("void"))
+            System.out.print("void");
+        else if (ctx.type() != null)
+            System.out.print(ctx.type().getText());
     }
 
     @Override
     public void exitReturnType(MiniJavaParser.ReturnTypeContext ctx) {
-
+        // No exit
     }
 
     @Override
     public void enterAccessModifier(MiniJavaParser.AccessModifierContext ctx) {
-
+        if (ctx.getText().contains("private"))
+            System.out.print("private");
+        else if (ctx.getText().contains("public"))
+            System.out.print("public");
     }
 
     @Override
     public void exitAccessModifier(MiniJavaParser.AccessModifierContext ctx) {
-
+        // No exit
     }
 
     @Override
@@ -246,32 +288,35 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterVariableAssignmentStatement(MiniJavaParser.VariableAssignmentStatementContext ctx) {
-
+        repeatTab(tabCount);
+        System.out.println(ctx.expression(0) + " = " + ctx.expression(1) + ";");
     }
 
     @Override
     public void exitVariableAssignmentStatement(MiniJavaParser.VariableAssignmentStatementContext ctx) {
-
+        // No exit
     }
 
     @Override
     public void enterArrayAssignmentStatement(MiniJavaParser.ArrayAssignmentStatementContext ctx) {
-
+        repeatTab(tabCount);
+        System.out.println(ctx.Identifier() + "[" + ctx.expression(0) + "] = " + ctx.expression(1) + ";");
     }
 
     @Override
     public void exitArrayAssignmentStatement(MiniJavaParser.ArrayAssignmentStatementContext ctx) {
-
+        // No exit
     }
 
     @Override
     public void enterLocalVarDeclaration(MiniJavaParser.LocalVarDeclarationContext ctx) {
-
+        repeatTab(tabCount);
+        System.out.println(ctx.localDeclaration());
     }
 
     @Override
     public void exitLocalVarDeclaration(MiniJavaParser.LocalVarDeclarationContext ctx) {
-
+        // No exit
     }
 
     @Override
@@ -326,22 +371,28 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterObjectInstantiationExpression(MiniJavaParser.ObjectInstantiationExpressionContext ctx) {
-
+        System.out.print("new " + ctx.Identifier().getText() + "()");
     }
 
     @Override
     public void exitObjectInstantiationExpression(MiniJavaParser.ObjectInstantiationExpressionContext ctx) {
-
+        // No exit
     }
 
     @Override
     public void enterArrayInstantiationExpression(MiniJavaParser.ArrayInstantiationExpressionContext ctx) {
+        String type = ctx.Identifier().getText();
+        if (ctx.getText().contains("number"))
+            type = "number";
+        else if (ctx.getText().contains("boolean"))
+            type = "boolean";
 
+        System.out.print("new " + type + "[" + ctx.expression().getText() + "]");
     }
 
     @Override
     public void exitArrayInstantiationExpression(MiniJavaParser.ArrayInstantiationExpressionContext ctx) {
-
+        // No exit
     }
 
     @Override
@@ -356,12 +407,12 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterIdentifierExpression(MiniJavaParser.IdentifierExpressionContext ctx) {
-
+        System.out.print(ctx.Identifier());
     }
 
     @Override
     public void exitIdentifierExpression(MiniJavaParser.IdentifierExpressionContext ctx) {
-
+        // No exit
     }
 
     @Override
@@ -376,22 +427,22 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterNotExpression(MiniJavaParser.NotExpressionContext ctx) {
-
+        System.out.print("!" + ctx.expression().getText());
     }
 
     @Override
     public void exitNotExpression(MiniJavaParser.NotExpressionContext ctx) {
-
+        // No exit
     }
 
     @Override
     public void enterBooleanLitExpression(MiniJavaParser.BooleanLitExpressionContext ctx) {
-
+        System.out.print(ctx.BooleanLiteral().getText());
     }
 
     @Override
     public void exitBooleanLitExpression(MiniJavaParser.BooleanLitExpressionContext ctx) {
-
+        // No exit
     }
 
     @Override
