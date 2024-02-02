@@ -6,6 +6,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.Locale;
+
 public class ProgramPrinter implements MiniJavaListener {
 
     public static int tabCount = 1;
@@ -31,7 +33,6 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterMainClass(MiniJavaParser.MainClassContext ctx) {
-
     }
 
     @Override
@@ -51,12 +52,29 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterClassDeclaration(MiniJavaParser.ClassDeclarationContext ctx) {
+        repeatTab(tabCount);
+        tabCount++;
+        printWord("class " + ctx.className.getText().toLowerCase(Locale.ROOT));
 
+        boolean hasInheritance = ctx.getText().contains("inherits");
+        if (hasInheritance)
+            printWord("inherits " + ctx.Identifier(1));
+
+        boolean hasImplementation = ctx.getText().contains("implements");
+        if (hasImplementation){
+            StringBuilder interfaceList = new StringBuilder(ctx.Identifier(2).getText());
+            for (int i = 2; i < ctx.Identifier().size(); i++)
+                interfaceList.append(",").append(ctx.Identifier(i).getText());
+            System.out.print("implements " + interfaceList);
+        }
+        System.out.println(" {\n");
     }
 
     @Override
     public void exitClassDeclaration(MiniJavaParser.ClassDeclarationContext ctx) {
-
+        tabCount--;
+        repeatTab(tabCount);
+        System.out.println("}");
     }
 
     @Override
@@ -91,7 +109,6 @@ public class ProgramPrinter implements MiniJavaListener {
         else
             printWord(ctx.type().getText());
         printWord(ctx.Identifier().getText());
-
     }
 
     @Override
@@ -206,12 +223,10 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void exitIfElseStatement(MiniJavaParser.IfElseStatementContext ctx) {
-
     }
 
     @Override
     public void enterWhileStatement(MiniJavaParser.WhileStatementContext ctx) {
-
     }
 
     @Override
