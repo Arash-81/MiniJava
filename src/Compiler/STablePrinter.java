@@ -6,7 +6,20 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.ArrayList;
+
 public class STablePrinter implements MiniJavaListener {
+    ArrayList<SymbolTable> symbolTables;
+    int nested = 0;
+    SymbolTable parent;
+    String intRegex = "\\d+";
+    String doubleRegex = "\\d+(\\.\\d+)?";
+    String charRegex = "'.'";
+
+    public STablePrinter(){
+        symbolTables = new ArrayList<>();
+    }
+
     @Override
     public void enterProgram(MiniJavaParser.ProgramContext ctx) {
 
@@ -19,7 +32,7 @@ public class STablePrinter implements MiniJavaListener {
 
     @Override
     public void enterMainClass(MiniJavaParser.MainClassContext ctx) {
-
+        parent = new SymbolTable(parent, "main", ctx.getStart().getLine(), "void", false);
     }
 
     @Override
