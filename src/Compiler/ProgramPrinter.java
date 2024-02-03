@@ -278,7 +278,6 @@ public class ProgramPrinter implements MiniJavaListener {
             tabCount++;
         }
         nested++;
-        System.out.println();
     }
 
     @Override
