@@ -161,12 +161,17 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterMethodDeclaration(MiniJavaParser.MethodDeclarationContext ctx) {
-
+        tabCount++;
     }
 
     @Override
     public void exitMethodDeclaration(MiniJavaParser.MethodDeclarationContext ctx) {
-
+        repeatTab(tabCount);
+        if (ctx.getText().contains("ret"))
+            printWord("return");
+//        printLastWord(ctx.getChild(ctx.getChildCount() - 2).getText() + ";");
+        tabCount--;
+        repeatStr(tabCount, "}");
     }
 
     @Override
@@ -315,12 +320,12 @@ public class ProgramPrinter implements MiniJavaListener {
     @Override
     public void enterPrintStatement(MiniJavaParser.PrintStatementContext ctx) {
         repeatTab(tabCount);
-        printWord("System.out.println(\"");
+        printWord("System.out.println(");
     }
 
     @Override
     public void exitPrintStatement(MiniJavaParser.PrintStatementContext ctx) {
-        printLastWord("\");");
+        printLastWord(");");
     }
 
     @Override
@@ -496,7 +501,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterIntLitExpression(MiniJavaParser.IntLitExpressionContext ctx) {
-
+//        printWord(ctx.IntegerLiteral().getText());
     }
 
     @Override
@@ -516,7 +521,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterNullLitExpression(MiniJavaParser.NullLitExpressionContext ctx) {
-
+        printWord("null");
     }
 
     @Override

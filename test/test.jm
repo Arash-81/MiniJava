@@ -24,10 +24,10 @@ class Pikachu inherits Pokemon {
     if(<>(health < 2)) {
     health = health - 2;
     }
-    number i = 0;
+    number i;
     while (i < 5) {
       print(i);
-      i++;
+      i = i + 1;
     }
     print("new health");
     ret health;
