@@ -5,6 +5,7 @@ import java.util.*;
 public class SymbolTable {
     HashMap<String, String> items;
     String name;
+    boolean isClass;
     String return_type;
     private int scopeNumber;
 
@@ -14,17 +15,18 @@ public class SymbolTable {
     boolean check_error;
 
 
-    public SymbolTable(SymbolTable parent, String name, int scopeNumber, String return_type, boolean check_error) {
+    public SymbolTable(SymbolTable parent, String name, int scopeNumber, boolean check_error, boolean isClass, String return_type) {
         child = new ArrayList<>();
         items = new HashMap<>();
-        this.parent =  parent;
+        this.parent = parent;
         this.name = name;
         this.scopeNumber = scopeNumber;
         if(parent != null){
             parent.child.add(this);
         }
-        this.return_type = return_type;
         this.check_error = check_error;
+        this.isClass = isClass;
+        this.return_type = return_type;
     }
 
     @Override

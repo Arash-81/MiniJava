@@ -33,7 +33,7 @@ public class STablePrinter implements MiniJavaListener {
     @Override
     public void enterMainClass(MiniJavaParser.MainClassContext ctx) {
         parent.items.put("Class_main", "Class : (name : main)");
-        parent = new SymbolTable(parent, "main", ctx.getStart().getLine(), "void", false);
+        parent = new SymbolTable(parent, "main", ctx.getStart().getLine(), "", false);
     }
 
     @Override
@@ -54,7 +54,8 @@ public class STablePrinter implements MiniJavaListener {
 
     @Override
     public void enterClassDeclaration(MiniJavaParser.ClassDeclarationContext ctx) {
-
+        parent.items.put("Class_main", "Class : (name : " + ctx.className.getText() + ")");
+        parent = new SymbolTable(parent, ctx.className.getText(), ctx.getStart().getLine(), "", false);
     }
 
     @Override
