@@ -16,7 +16,7 @@ public class STablePrinter implements MiniJavaListener {
     String doubleRegex = "\\d+(\\.\\d+)?";
     String charRegex = "'.'";
 
-    public STablePrinter(){
+    public STablePrinter() {
         symbolTables = new ArrayList<>();
     }
 
@@ -105,7 +105,15 @@ public class STablePrinter implements MiniJavaListener {
 
     @Override
     public void enterMethodDeclaration(MiniJavaParser.MethodDeclarationContext ctx) {
-
+        parent.items.put("Method_" + ctx.Identifier().getText(), "Method : (name : " + ctx.Identifier().getText() + ") (return type: " + ctx.returnType().getText() + ")");
+        parent = new SymbolTable(
+                parent,
+                ctx.Identifier().getText(),
+                ctx.getStart().getLine(),
+                false,
+                false,
+                ctx.returnType().getText()
+        );
     }
 
     @Override
