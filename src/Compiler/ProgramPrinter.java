@@ -151,7 +151,7 @@ public class ProgramPrinter implements MiniJavaListener {
     @Override
     public void enterLocalDeclaration(MiniJavaParser.LocalDeclarationContext ctx) {
         repeatTab(tabCount);
-        System.out.println(ctx.type() + " " + ctx.Identifier() + ";");
+        System.out.println(ctx.type().getText() + " " + ctx.Identifier().getText() + ";");
     }
 
     @Override
@@ -190,7 +190,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterParameter(MiniJavaParser.ParameterContext ctx) {
-        System.out.print(ctx.type() + " " + ctx.Identifier() + ";");
+        System.out.print(ctx.type().getText() + " " + ctx.Identifier().getText());
     }
 
     @Override
@@ -203,18 +203,17 @@ public class ProgramPrinter implements MiniJavaListener {
         if (!ctx.statement().isEmpty()) {
             for (int i = 0; i < ctx.statement().size(); i++) {
                 repeatTab(tabCount);
-                System.out.println(ctx.statement(i));
+                System.out.println(ctx.statement(i).getText());
             }
-        }
-        if (ctx.getText().contains("return")) {
-            repeatTab(tabCount);
-            System.out.println("return " + ctx.expression() + ";");
         }
     }
 
     @Override
     public void exitMethodBody(MiniJavaParser.MethodBodyContext ctx) {
-        // No exit
+        if (ctx.getText().contains("return")) {
+            repeatTab(tabCount);
+            System.out.println("return " + ctx.expression().getText() + ";");
+        }
     }
 
     @Override
@@ -279,6 +278,7 @@ public class ProgramPrinter implements MiniJavaListener {
             tabCount++;
         }
         nested++;
+        System.out.println();
     }
 
     @Override
@@ -294,7 +294,7 @@ public class ProgramPrinter implements MiniJavaListener {
     public void enterIfElseStatement(MiniJavaParser.IfElseStatementContext ctx) {
         repeatTab(tabCount);
 
-        System.out.println("if(" + ctx.expression() + ")" + ctx.ifBlock().getText());
+        System.out.println("if(" + ctx.expression().getText() + ") " + ctx.ifBlock().getText());
 
         if (ctx.getText().contains("else")) {
             System.out.println("else " + ctx.elseBlock().getText());
@@ -320,7 +320,7 @@ public class ProgramPrinter implements MiniJavaListener {
     @Override
     public void enterPrintStatement(MiniJavaParser.PrintStatementContext ctx) {
         repeatTab(tabCount);
-        printWord("System.out.println(");
+        printWord("System.out.println(" + ctx.expression().getText());
     }
 
     @Override
@@ -331,7 +331,7 @@ public class ProgramPrinter implements MiniJavaListener {
     @Override
     public void enterVariableAssignmentStatement(MiniJavaParser.VariableAssignmentStatementContext ctx) {
         repeatTab(tabCount);
-        System.out.println(ctx.expression(0) + " = " + ctx.expression(1) + ";");
+        System.out.println(ctx.expression(0).getText() + " = " + ctx.expression(1).getText() + ";");
     }
 
     @Override
@@ -342,7 +342,7 @@ public class ProgramPrinter implements MiniJavaListener {
     @Override
     public void enterArrayAssignmentStatement(MiniJavaParser.ArrayAssignmentStatementContext ctx) {
         repeatTab(tabCount);
-        System.out.println(ctx.Identifier() + "[" + ctx.expression(0) + "] = " + ctx.expression(1) + ";");
+        System.out.println(ctx.Identifier().getText() + "[" + ctx.expression(0).getText() + "] = " + ctx.expression(1).getText() + ";");
     }
 
     @Override
@@ -353,7 +353,7 @@ public class ProgramPrinter implements MiniJavaListener {
     @Override
     public void enterLocalVarDeclaration(MiniJavaParser.LocalVarDeclarationContext ctx) {
 //        repeatTab(tabCount);
-        System.out.println(ctx.localDeclaration());
+        System.out.println(ctx.localDeclaration().getText());
     }
 
     @Override
@@ -451,7 +451,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterIdentifierExpression(MiniJavaParser.IdentifierExpressionContext ctx) {
-        System.out.print(ctx.Identifier());
+        System.out.print(ctx.Identifier().getText());
     }
 
     @Override
