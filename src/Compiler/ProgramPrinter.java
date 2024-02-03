@@ -21,6 +21,10 @@ public class ProgramPrinter implements MiniJavaListener {
         System.out.println(new String(new char[count]).replace("\0", str));
     }
 
+    public static void printBrackets(char bracket){
+        System.out.print(bracket);
+    }
+
     public static void printWord(String keyWord) {
         System.out.print(keyWord + " ");
     }
@@ -55,10 +59,12 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterMainMethod(MiniJavaParser.MainMethodContext ctx) {
-        for (int i = 0; i < 5; i++)
+        repeatTab(tabCount);
+        for (int i = 0; i < 4; i++)
             printWord(ctx.getChild(i).getText());
+        printBrackets('(');
         printWord("String[] args");
-        printWord(")");
+        printBrackets(')');
         printLastWord("{");
         tabCount++;
     }
@@ -296,21 +302,25 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterWhileStatement(MiniJavaParser.WhileStatementContext ctx) {
+        repeatTab(tabCount);
+        printWord("while");
+        tabCount++;
     }
 
     @Override
     public void exitWhileStatement(MiniJavaParser.WhileStatementContext ctx) {
-
+        tabCount--;
     }
 
     @Override
     public void enterPrintStatement(MiniJavaParser.PrintStatementContext ctx) {
-
+        repeatTab(tabCount);
+        printWord("System.out.println(\"");
     }
 
     @Override
     public void exitPrintStatement(MiniJavaParser.PrintStatementContext ctx) {
-
+        printLastWord("\");");
     }
 
     @Override
