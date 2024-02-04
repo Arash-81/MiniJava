@@ -5,13 +5,20 @@ class Pikachu {
     health = health - 2;
     }
     print("new health");
-    return health;
     }
 }
 class x {
+    number health;
+    final number maxMovesNum = 5;
+    private number speed;
+    boolean legendary;
+    Pokeball ball;
+    Move[] moves = new Moves[maxMovesNum];
     private final number x;
     public void attack(Pokemon target, number amount) {
     target.damage(amount);
+    array = new number[66];
+    print(array.length);
     }
 }
 interface Pokemon {
