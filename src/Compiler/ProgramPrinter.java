@@ -6,13 +6,13 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.Locale;
-
 public class ProgramPrinter implements MiniJavaListener {
 
     public static int tabCount = 0;
     public static String tab = "    ";
-    public static int nested = 1;
+    public static int nested = 0;
+
+    public boolean isNotInterface = true;
     public static int parametersCount = 0;
     public static void repeatTab(int count){
         System.out.print(new String(new char[count]).replace("\0", tab));
@@ -81,17 +81,18 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterClassDeclaration(MiniJavaParser.ClassDeclarationContext ctx) {
+        isNotInterface = true;
         repeatTab(tabCount);
         tabCount++;
-        printWord("class " + ctx.className.getText().toLowerCase(Locale.ROOT));
+        printWord("class " + ctx.className.getText());
 
-        boolean hasInheritance = ctx.getText().contains("extends");
+        boolean hasInheritance = ctx.getText().contains("inherits");
         if (hasInheritance)
             printWord("extends " + ctx.Identifier(1));
 
         boolean hasImplementation = ctx.getText().contains("implements");
         if (hasImplementation) {
-            StringBuilder interfaceList = new StringBuilder(ctx.Identifier(2).getText());
+            StringBuilder interfaceList = new StringBuilder(ctx.Identifier(1).getText());
             for (int i = 3; i < ctx.Identifier().size(); i++)
                 interfaceList.append(",").append(ctx.Identifier(i).getText());
             System.out.print("implements " + interfaceList);
@@ -101,6 +102,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void exitClassDeclaration(MiniJavaParser.ClassDeclarationContext ctx) {
+        isNotInterface = false;
         tabCount--;
         repeatTab(tabCount);
         System.out.println("}");
@@ -108,13 +110,14 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterInterfaceDeclaration(MiniJavaParser.InterfaceDeclarationContext ctx) {
-        repeatTab(tabCount);
-        tabCount++;
         System.out.println("interface " + ctx.Identifier().getText() + " {");
+        isNotInterface = false;
+        tabCount++;
     }
 
     @Override
     public void exitInterfaceDeclaration(MiniJavaParser.InterfaceDeclarationContext ctx) {
+        isNotInterface = true;
         tabCount--;
         repeatTab(tabCount);
         System.out.println("}");
@@ -122,12 +125,20 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterInterfaceMethodDeclaration(MiniJavaParser.InterfaceMethodDeclarationContext ctx) {
-
+        repeatTab(tabCount);
+        if (ctx.accessModifier() != null)
+            printWord(ctx.accessModifier().getText());
+        String fieldType = ctx.returnType().getText();
+        if (fieldType.equals("number"))
+            printWord("int");
+        else
+            printWord(fieldType);
+        printWord(ctx.Identifier().getText() + "(");
     }
 
     @Override
     public void exitInterfaceMethodDeclaration(MiniJavaParser.InterfaceMethodDeclarationContext ctx) {
-
+        printLastWord(");");
     }
 
     @Override
@@ -155,7 +166,12 @@ public class ProgramPrinter implements MiniJavaListener {
     @Override
     public void enterLocalDeclaration(MiniJavaParser.LocalDeclarationContext ctx) {
         repeatTab(tabCount);
-        System.out.println(ctx.type().getText() + " " + ctx.Identifier().getText() + ";");
+        String fieldType = ctx.type().getText();
+        if (fieldType.equals("number"))
+            printWord("int");
+        else
+            printWord(fieldType);
+        printLastWord(ctx.Identifier().getText() + ";");
     }
 
     @Override
@@ -170,7 +186,7 @@ public class ProgramPrinter implements MiniJavaListener {
             printLastWord(ctx.Override().getText());
         }
         repeatTab(tabCount);
-        if (!ctx.accessModifier().isEmpty())
+        if (ctx.accessModifier() != null)
             printWord(ctx.accessModifier().getText());
         String fieldType = ctx.returnType().getText();
         if (fieldType.equals("number"))
@@ -181,14 +197,14 @@ public class ProgramPrinter implements MiniJavaListener {
         if (ctx.parameterList() == null)
             printLastWord(") {");
         tabCount++;
-
     }
 
     @Override
     public void exitMethodDeclaration(MiniJavaParser.MethodDeclarationContext ctx) {
-        repeatTab(tabCount);
-        if (ctx.getText().contains("ret"))
+        if (ctx.getText().contains("ret")) {
+            repeatTab(tabCount);
             printWord("return");
+        }
 //        printLastWord(ctx.getChild(ctx.getChildCount() - 2).getText() + ";");
         tabCount--;
         repeatStr("}");
@@ -202,7 +218,8 @@ public class ProgramPrinter implements MiniJavaListener {
     @Override
     public void exitParameterList(MiniJavaParser.ParameterListContext ctx) {
         parametersCount = 0;
-        printLastWord(") {");
+        if (isNotInterface)
+            printLastWord(") {");
     }
 
     @Override
@@ -236,16 +253,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterType(MiniJavaParser.TypeContext ctx) {
-//        String type;
-//        if (ctx.javaType() != null)
-//            type = ctx.javaType().getText();
-//        else
-//            type = ctx.Identifier().getText();
-//
-//        if (ctx.getText().contains("["))
-//            System.out.print(type + "[]");
-//        else
-//            System.out.print(type);
+
     }
 
     @Override
@@ -312,19 +320,20 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void exitIfElseStatement(MiniJavaParser.IfElseStatementContext ctx) {
-//        printLastWord(")");
+
     }
 
     @Override
     public void enterWhileStatement(MiniJavaParser.WhileStatementContext ctx) {
         repeatTab(tabCount);
-        printWord("while");
+        printWord("while (");
         tabCount++;
     }
 
     @Override
     public void exitWhileStatement(MiniJavaParser.WhileStatementContext ctx) {
         tabCount--;
+        repeatStr("}");
     }
 
     @Override
@@ -362,8 +371,6 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterLocalVarDeclaration(MiniJavaParser.LocalVarDeclarationContext ctx) {
-//        repeatTab(tabCount);
-        System.out.println(ctx.localDeclaration().getText());
     }
 
     @Override
@@ -390,7 +397,7 @@ public class ProgramPrinter implements MiniJavaListener {
     @Override
     public void exitIfBlock(MiniJavaParser.IfBlockContext ctx) {
         tabCount--;
-        printLastWord("}");
+        repeatStr("}");
     }
 
     @Override
@@ -410,7 +417,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterWhileBlock(MiniJavaParser.WhileBlockContext ctx) {
-
+        printLastWord(") {");
     }
 
     @Override
@@ -447,8 +454,7 @@ public class ProgramPrinter implements MiniJavaListener {
             type = "int";
         else
             type = "boolean";
-        printWord("new" + type + "[");
-//        System.out.print("new " + type + "[" );
+        printWord("new " + type + "[");
     }
 
     @Override
@@ -558,12 +564,13 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterArrayAccessExpression(MiniJavaParser.ArrayAccessExpressionContext ctx) {
-
+        printWord(ctx.expression(1).getText());
+        printBrackets('[');
     }
 
     @Override
     public void exitArrayAccessExpression(MiniJavaParser.ArrayAccessExpressionContext ctx) {
-
+        printWord("]");
     }
 
     @Override
@@ -598,12 +605,12 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterArrayLengthExpression(MiniJavaParser.ArrayLengthExpressionContext ctx) {
-        repeatTab(tabCount);
+//        repeatTab(tabCount);
     }
 
     @Override
     public void exitArrayLengthExpression(MiniJavaParser.ArrayLengthExpressionContext ctx) {
-        printLastWord(".length");
+        printWord(".length");
     }
 
     @Override
