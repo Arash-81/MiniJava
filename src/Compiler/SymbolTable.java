@@ -1,54 +1,59 @@
 package Compiler;
+
 import java.util.*;
 
 
 public class SymbolTable {
     HashMap<String, String> items;
     String name;
-    boolean isClass;
-    String return_type;
-    private int scopeNumber;
-
+    String type;
     SymbolTable parent;
-    ArrayList<SymbolTable> child;
+    ArrayList<SymbolTable> children;
+    private final int scope;
+    private final int depth;
 
-    boolean check_error;
-
-
-    public SymbolTable(SymbolTable parent, String name, int scopeNumber, boolean check_error, boolean isClass, String return_type) {
-        child = new ArrayList<>();
+    public SymbolTable(SymbolTable parent, String name, String type, int scope, int depth) {
+        children = new ArrayList<>();
         items = new HashMap<>();
         this.parent = parent;
         this.name = name;
-        this.scopeNumber = scopeNumber;
-        if(parent != null){
-            parent.child.add(this);
-        }
-        this.check_error = check_error;
-        this.isClass = isClass;
-        this.return_type = return_type;
+        this.type = type;
+        this.scope = scope;
+        this.depth = depth;
+        if (parent != null)
+            parent.children.add(this);
+    }
+
+    private String getIndent() {
+        return "    ".repeat(Math.max(0, this.depth));
     }
 
     @Override
     public String toString() {
-        return "------------- " + name + " : " + scopeNumber + " -------------\n" +
+        return getIndent() + "------------- " + name + " : " + scope + " -------------\n" +
                 printItems() +
-                "-----------------------------------------\n";
+                getIndent() + "-----------------------------------------\n";
+    }
+
+    public void insert(String idefName, String attributes) {
+        this.items.put(idefName, attributes);
+    }
+
+    public String lookup(String lookup) {
+        return this.items.get(lookup);
     }
 
     public String printItems() {
-        String itemsStr = "";
-        for (Map.Entry<String, String> entry : items.entrySet()) {
-            itemsStr += "Key = " + entry.getKey() + " | Value = " + entry.getValue()
-                    + "\n";
-        }
-        return itemsStr;
+        StringBuilder itemsStr = new StringBuilder();
+
+        for (Map.Entry<String, String> entry : items.entrySet())
+            itemsStr.append(getIndent()).append("Key = ").append(entry.getKey()).append(" | Value = ").append(entry.getValue()).append("\n");
+
+        return itemsStr.toString();
     }
 
-    public void print(){
-        System.out.println(this.toString());
-        for(int i = 0; i< child.size(); i++){
-            child.get(i).print();
-        }
+    public void print() {
+        System.out.println(this);
+        for (SymbolTable child : children) child.print();
     }
 }
