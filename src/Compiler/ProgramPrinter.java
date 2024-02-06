@@ -12,6 +12,12 @@ public class ProgramPrinter implements MiniJavaListener {
     public static String tab = "    ";
     public static int nested = 0;
 
+    public boolean isNotAssignment = false;
+
+    boolean isPrint = false;
+
+    public boolean isNotExpression = true;
+
     public boolean isNotInterface = true;
     public static int parametersCount = 0;
     public static void repeatTab(int count){
@@ -201,13 +207,12 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void exitMethodDeclaration(MiniJavaParser.MethodDeclarationContext ctx) {
-        if (ctx.getText().contains("ret")) {
-            repeatTab(tabCount);
-            printWord("return");
-        }
-//        printLastWord(ctx.getChild(ctx.getChildCount() - 2).getText() + ";");
-        tabCount--;
-        repeatStr("}");
+//        if (ctx.getText().contains("ret")) {
+//            repeatTab(tabCount);
+//            printWord("return");
+//        }
+//        tabCount--;
+//        repeatStr("}");
     }
 
     @Override
@@ -243,12 +248,13 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void exitMethodBody(MiniJavaParser.MethodBodyContext ctx) {
-        if (ctx.getText().contains("return")) {
+        if (ctx.getText().contains("ret")) {
             repeatTab(tabCount);
             printLastWord("return " + ctx.expression().getText() + ";");
-            tabCount--;
-            printLastWord("}");
         }
+            tabCount--;
+            repeatTab(tabCount);
+            printLastWord("}");
     }
 
     @Override
@@ -339,18 +345,22 @@ public class ProgramPrinter implements MiniJavaListener {
     @Override
     public void enterPrintStatement(MiniJavaParser.PrintStatementContext ctx) {
         repeatTab(tabCount);
+        isPrint = true;
         printWord("System.out.println(");
     }
 
     @Override
     public void exitPrintStatement(MiniJavaParser.PrintStatementContext ctx) {
         printLastWord(");");
+        isPrint = false;
     }
 
     @Override
     public void enterVariableAssignmentStatement(MiniJavaParser.VariableAssignmentStatementContext ctx) {
         repeatTab(tabCount);
         printWord(ctx.expression(0).getText() + " =");
+        if (isNotAssignment)
+            printWord(ctx.expression(1).getText());
     }
 
     @Override
@@ -427,12 +437,15 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterLtExpression(MiniJavaParser.LtExpressionContext ctx) {
-//        System.out.print(ctx.expression(0).getText() + " < " + ctx.expression(1).getText());
+        isNotExpression = false;
+        printWord(ctx.expression(0).getText());
+        printWord("<");
+        printWord(ctx.expression(0).getText());
     }
 
     @Override
     public void exitLtExpression(MiniJavaParser.LtExpressionContext ctx) {
-
+        isNotExpression = true;
     }
 
     @Override
@@ -455,16 +468,20 @@ public class ProgramPrinter implements MiniJavaListener {
         else
             type = "boolean";
         printWord("new " + type + "[");
+        isNotAssignment = true;
     }
 
     @Override
     public void exitArrayInstantiationExpression(MiniJavaParser.ArrayInstantiationExpressionContext ctx) {
         printWord("]");
+        isNotAssignment = false;
     }
 
     @Override
     public void enterPowExpression(MiniJavaParser.PowExpressionContext ctx) {
-
+        printWord("Math.pow(");
+        printWord(ctx.expression(0).getText() + ",");
+        printWord(ctx.expression(1).getText() + ")");
     }
 
     @Override
@@ -474,7 +491,8 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterIdentifierExpression(MiniJavaParser.IdentifierExpressionContext ctx) {
-//        System.out.print(ctx.Identifier().getText());
+        if (isPrint)
+            System.out.print(ctx.Identifier().getText());
     }
 
     @Override
@@ -524,7 +542,8 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterIntLitExpression(MiniJavaParser.IntLitExpressionContext ctx) {
-        printWord(ctx.IntegerLiteral().getText());
+        if (isNotExpression)
+            printWord(ctx.getText());
     }
 
     @Override
@@ -534,7 +553,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterStringLitExpression(MiniJavaParser.StringLitExpressionContext ctx) {
-
+        printWord(ctx.getText());
     }
 
     @Override
@@ -575,12 +594,15 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterAddExpression(MiniJavaParser.AddExpressionContext ctx) {
-
+        isNotExpression = false;
+        printWord(ctx.expression(0).getText());
+        printWord("+");
+        printWord(ctx.expression(1).getText());
     }
 
     @Override
     public void exitAddExpression(MiniJavaParser.AddExpressionContext ctx) {
-
+        isNotExpression = true;
     }
 
     @Override
@@ -625,17 +647,22 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterSubExpression(MiniJavaParser.SubExpressionContext ctx) {
-
+        isNotExpression = false;
+        printWord(ctx.expression(0).getText());
+        printWord("-");
+        printWord(ctx.expression(1).getText());
     }
 
     @Override
     public void exitSubExpression(MiniJavaParser.SubExpressionContext ctx) {
-
+        isNotExpression = true;
     }
 
     @Override
     public void enterMulExpression(MiniJavaParser.MulExpressionContext ctx) {
-
+        printWord(ctx.expression(0).getText());
+        printWord("*");
+        printWord(ctx.expression(1).getText());
     }
 
     @Override

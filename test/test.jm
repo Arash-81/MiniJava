@@ -1,13 +1,13 @@
 class Pikachu {
 
     public static void main(string[] state) {
-    if(<>(health < 2)) {
+    if(<>(health < a2)) {
     health = health - 2;
     }
     print("new health");
     }
 }
-class x {
+class X {
     number health;
     final number maxMovesNum = 5;
     private number speed;
@@ -34,7 +34,9 @@ class Pikachu implements Pokemon {
     number i;
     while (i < 5) {
       print(i);
-      i = i + 1;
+      i = i * 1;
+      i = i ** 1;
+      i = i - 1;
     }
     print("new health");
     ret health;
