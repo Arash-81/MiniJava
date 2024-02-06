@@ -129,7 +129,10 @@ public class STablePrinter implements MiniJavaListener {
 
     @Override
     public void enterFieldDeclaration(MiniJavaParser.FieldDeclarationContext ctx) {
-        parent.insert("var_" + ctx.Identifier().getText(), "Field: (name: " + ctx.Identifier().getText() + ") (type: " + ctx.type().getText() + ") (accessModifier: " + getAccModText(ctx.accessModifier().getText()) + ")");
+        if (ctx.accessModifier() != null)
+            parent.insert("var_" + ctx.Identifier().getText(), "Field: (name: " + ctx.Identifier().getText() + ") (type: " + ctx.type().getText() + ") (accessModifier: " + getAccModText(ctx.accessModifier().getText()) + ")");
+        else
+            parent.insert("var_" + ctx.Identifier().getText(), "Field: (name: " + ctx.Identifier().getText() + ") (type: " + ctx.type().getText() + ")");
     }
 
     @Override
