@@ -15,6 +15,7 @@ class X {
     Pokeball ball;
     Move[] moves = new Moves[maxMovesNum];
     private final number x;
+    number[] powers = {1, 2, 3};
     public void attack(Pokemon target, number amount) {
     target.damage(amount);
     array = new number[66];
@@ -32,13 +33,30 @@ class Pikachu implements Pokemon {
     health = health - 2;
     }
     number i;
+    number n;
+    n = 4;
     while (i < 5) {
       print(i);
-      i = i * 1;
-      i = i ** 1;
-      i = i - 1;
+      i = i * n;
+      i = i ** n;
+      i = 1 + i;
     }
     print("new health");
+    ret health;
+    }
+}
+
+class Pokemon2 {
+    public number damage() {
+    health = health - 5;
+    ret health;
+    }
+}
+
+class Pikachu2 inherits Pokemon2 {
+    @Override
+    public number damage() {
+    health = health - 2;
     ret health;
     }
 }

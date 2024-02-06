@@ -157,6 +157,8 @@ public class ProgramPrinter implements MiniJavaListener {
             printWord(ctx.Final().getText());
         if (fieldType.equals("number"))
             printWord("int");
+        else if (fieldType.equals("number[]"))
+            printWord("int[]");
         else
             printWord(fieldType);
         printWord(ctx.Identifier().getText());
@@ -440,7 +442,7 @@ public class ProgramPrinter implements MiniJavaListener {
         isNotExpression = false;
         printWord(ctx.expression(0).getText());
         printWord("<");
-        printWord(ctx.expression(0).getText());
+        printWord(ctx.expression(1).getText());
     }
 
     @Override
@@ -502,12 +504,13 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterMethodCallExpression(MiniJavaParser.MethodCallExpressionContext ctx) {
-
+        repeatTab(tabCount);
+        printWord(ctx.getText());
     }
 
     @Override
     public void exitMethodCallExpression(MiniJavaParser.MethodCallExpressionContext ctx) {
-
+        printLastWord(";");
     }
 
     @Override
@@ -607,7 +610,6 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterThisExpression(MiniJavaParser.ThisExpressionContext ctx) {
-
     }
 
     @Override
@@ -637,7 +639,7 @@ public class ProgramPrinter implements MiniJavaListener {
 
     @Override
     public void enterIntarrayInstantiationExpression(MiniJavaParser.IntarrayInstantiationExpressionContext ctx) {
-
+        printWord(ctx.getText());
     }
 
     @Override
